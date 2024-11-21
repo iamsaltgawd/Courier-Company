@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Index Page</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<!-- Include Header -->
+<div th:insert="layout/header :: header"></div>
+
+<!-- Page Content -->
+<main class="container my-5">
+    <h1 th:text="${title}">Index Page</h1>
+    <p>Baza de date a unei firme de curierat.</p>
+</main>
+
+<!-- Include Footer -->
+<div th:insert="layout/footer :: footer"></div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+</body>
+</html>
