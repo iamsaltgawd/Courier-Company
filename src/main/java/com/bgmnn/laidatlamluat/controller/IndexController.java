@@ -10,7 +10,7 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("title", "Index Page");
-        model.addAttribute("activePage", "home"); // For navbar highlighting
+        model.addAttribute("activePage", "home");
         return "index";
     }
 }

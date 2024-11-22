@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head"></head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Adauga Angajat</h1>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <form th:action="@{/angajati/add}" method="post">
+            <div class="mb-3">
+                <label for="nume" class="form-label">Nume</label>
+                <input type="text" class="form-control" id="nume" name="angajat_Nume" th:value="${angajat.angajat_Nume}" required>
+            </div>
+            <div class="mb-3">
+                <label for="prenume" class="form-label">Prenume</label>
+                <input type="text" class="form-control" id="prenume" name="angajat_Prenume" th:value="${angajat.angajat_Prenume}" required>
+            </div>
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <input type="text" class="form-control" id="rol" name="angajat_Rol" th:value="${angajat.angajat_Rol}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="angajat_Email" th:value="${angajat.angajat_Email}" required>
+            </div>
+            <div class="mb-3">
+                <label for="telefon" class="form-label">Telefon</label>
+                <input type="text" class="form-control" id="telefon" name="angajat_Telefon" th:value="${angajat.angajat_Telefon}" required>
+            </div>
+            <div class="mb-3">
+                <label for="sediuId" class="form-label">Sediu ID</label>
+                <input type="number" class="form-control" id="sediuId" name="sediu_ID" th:value="${angajat.sediu_ID}" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salveaza</button>
+            <a href="/angajati" class="btn btn-secondary">Anuleaza</a>
+        </form>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="html_head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">LAIDATLAMLUAT</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.bundle.js}"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        #page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        #content-wrap {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<header class="bg-light border-bottom mb-3" th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light container">
+        <a class="navbar-brand" href="/">LAIDATLAMLUAT</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/" th:classappend="${activePage == 'home' ? 'active' : ''}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/angajati" th:classappend="${activePage == 'angajati' ? 'active' : ''}">Angajati</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+</header>
+    <!-- actual page content -->
+<footer class="bg-light border-top py-3" th:fragment="footer">
+    <div class="container text-center">
+        &copy; 2024 LAIDATLAMLUAT
+    </div>
+</footer>
+
+</body>
+</html>

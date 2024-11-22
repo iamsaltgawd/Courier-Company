@@ -10,36 +10,34 @@ import java.util.List;
 @Service
 public class AngajatService {
 
-    private final AngajatDAO angajatDAO;
-
-    // Constructor prin care injectăm DAO-ul
     @Autowired
-    public AngajatService(AngajatDAO angajatDAO) {
-        this.angajatDAO = angajatDAO;
-    }
+    private AngajatDAO angajatDAO;
 
-    // Metodă pentru a obține toți angajații
     public List<Angajat> getAllAngajati() {
-        return angajatDAO.getAllAngajati();
+        return angajatDAO.findAll();
     }
 
-    // Metodă pentru a adăuga un nou angajat
+    public Angajat getAngajatById(int id) {
+        return angajatDAO.findById(id);
+    }
+
     public void addAngajat(Angajat angajat) {
-        angajatDAO.addAngajat(angajat);
+        if (angajatDAO.emailExists(angajat.getAngajat_Email())) {
+            throw new IllegalArgumentException("Emailul există deja!");
+        }
+        angajatDAO.save(angajat);
     }
 
-    // Metodă pentru a șterge un angajat după ID
-    public void deleteAngajatById(int id) {
-        angajatDAO.deleteAngajatById(id);
-    }
-
-    // Metodă pentru a găsi un angajat după ID
-    public Angajat findAngajatById(int id) {
-        return angajatDAO.findAngajatById(id);
-    }
-
-    // Metodă pentru a actualiza un angajat
     public void updateAngajat(Angajat angajat) {
-        angajatDAO.updateAngajat(angajat);
+        String query = "SELECT COUNT(*) FROM Angajati WHERE Angajat_Email = ? AND Angajat_ID != ?";
+        Integer count = angajatDAO.getJdbcTemplate().queryForObject(query, Integer.class, angajat.getAngajat_Email(), angajat.getAngajat_ID());
+        if (count != null && count > 0) {
+            throw new IllegalArgumentException("Emailul există deja la alt utilizator!");
+        }
+        angajatDAO.update(angajat);
+    }
+
+    public void deleteAngajat(int id) {
+        angajatDAO.deleteById(id);
     }
 }

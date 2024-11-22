@@ -1,125 +1,106 @@
 package com.bgmnn.laidatlamluat.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Angajat {
-    private int angajatId; // Cheia primară
-    private String nume; // Angajat_Nume
-    private String prenume; // Angajat_Prenume
-    private String rol; // Angajat_Rol
-    private String telefon; // Angajat_Telefon
-    private String email; // Angajat_Email (Unique)
-    private LocalDate dataAngajare; // Angajat_Data_Angajare
-    private int sediuId; // Sediu_ID (Foreign Key)
+    private int angajat_ID;
+    private String angajat_Nume;
+    private String angajat_Prenume;
+    private String angajat_Rol;
+    private String angajat_Telefon;
+    private String angajat_Email;
+    private Date angajat_Data_Angajare;
+    private int sediu_ID;
 
-    // Constructor fără parametri
     public Angajat() {}
 
-    // Constructor cu parametri
-    public Angajat(int angajatId, String nume, String prenume, String rol, String telefon, String email, LocalDate dataAngajare, int sediuId) {
-        this.angajatId = angajatId;
-        this.nume = nume;
-        this.prenume = prenume;
-        this.rol = rol;
-        this.telefon = telefon;
-        this.email = email;
-        this.dataAngajare = dataAngajare;
-        this.sediuId = sediuId;
+    public Angajat(int angajat_ID, String angajat_Nume, String angajat_Prenume, String angajat_Rol, String angajat_Telefon, String angajat_Email, Date angajat_Data_Angajare, int sediu_ID) {
+        this.angajat_ID = angajat_ID;
+        this.angajat_Nume = angajat_Nume;
+        this.angajat_Prenume = angajat_Prenume;
+        this.angajat_Rol = angajat_Rol;
+        this.angajat_Telefon = angajat_Telefon;
+        this.angajat_Email = angajat_Email;
+        this.angajat_Data_Angajare = angajat_Data_Angajare;
+        this.sediu_ID = sediu_ID;
     }
 
-    // Getter pentru angajatId
-    public int getAngajatId() {
-        return angajatId;
+    public int getAngajat_ID() {
+        return angajat_ID;
     }
 
-    // Setter pentru angajatId
-    public void setAngajatId(int angajatId) {
-        this.angajatId = angajatId;
+    public void setAngajat_ID(int angajat_ID) {
+        this.angajat_ID = angajat_ID;
     }
 
-    public String getNume() {
-        return nume;
+    public String getAngajat_Nume() {
+        return angajat_Nume;
     }
 
-    public void setNume(String nume) {
-        this.nume = nume;
+    public void setAngajat_Nume(String angajat_Nume) {
+        this.angajat_Nume = angajat_Nume;
     }
 
-    public String getPrenume() {
-        return prenume;
+    public String getAngajat_Prenume() {
+        return angajat_Prenume;
     }
 
-    public void setPrenume(String prenume) {
-        this.prenume = prenume;
+    public void setAngajat_Prenume(String angajat_Prenume) {
+        this.angajat_Prenume = angajat_Prenume;
     }
 
-    public String getRol() {
-        return rol;
+    public String getAngajat_Rol() {
+        return angajat_Rol;
     }
 
-    public void setRol(String rol) {
-        this.rol = rol;
+    public void setAngajat_Rol(String angajat_Rol) {
+        this.angajat_Rol = angajat_Rol;
     }
 
-    public String getTelefon() {
-        return telefon;
+    public String getAngajat_Telefon() {
+        return angajat_Telefon;
     }
 
-    public void setTelefon(String telefon) {
-        this.telefon = telefon;
+    public void setAngajat_Telefon(String angajat_Telefon) {
+        this.angajat_Telefon = angajat_Telefon;
     }
 
-    public String getEmail() {
-        return email;
+    public String getAngajat_Email() {
+        return angajat_Email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAngajat_Email(String angajat_Email) {
+        this.angajat_Email = angajat_Email;
     }
 
-    public LocalDate getDataAngajare() {
-        return dataAngajare;
+    public Date getAngajat_Data_Angajare() {
+        return angajat_Data_Angajare;
     }
 
-    public void setDataAngajare(LocalDate dataAngajare) {
-        this.dataAngajare = dataAngajare;
+    public void setAngajat_Data_Angajare(Date angajat_Data_Angajare) {
+        this.angajat_Data_Angajare = angajat_Data_Angajare;
     }
 
-    public int getSediuId() {
-        return sediuId;
+    public int getSediu_ID() {
+        return sediu_ID;
     }
 
-    public void setSediuId(int sediuId) {
-        this.sediuId = sediuId;
+    public void setSediu_ID(int sediu_ID) {
+        this.sediu_ID = sediu_ID;
     }
 
-    // Metodă pentru a verifica dacă doi angajați sunt egali (după email, fiind unic)
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Angajat angajat = (Angajat) obj;
-        return email != null && email.equals(angajat.email);
-    }
-
-    // Metodă pentru generarea unui hashCode (bazat pe email, fiind unic)
-    @Override
-    public int hashCode() {
-        return email != null ? email.hashCode() : 0;
-    }
-
-    // Metodă toString pentru debugging și afișare
+    // ToString (pentru debug)
     @Override
     public String toString() {
         return "Angajat{" +
-                "angajatId=" + angajatId +
-                ", nume='" + nume + '\'' +
-                ", prenume='" + prenume + '\'' +
-                ", rol='" + rol + '\'' +
-                ", telefon='" + telefon + '\'' +
-                ", email='" + email + '\'' +
-                ", dataAngajare=" + dataAngajare +
-                ", sediuId=" + sediuId +
+                "angajat_ID=" + angajat_ID +
+                ", angajat_Nume='" + angajat_Nume + '\'' +
+                ", angajat_Prenume='" + angajat_Prenume + '\'' +
+                ", angajat_Rol='" + angajat_Rol + '\'' +
+                ", angajat_Telefon='" + angajat_Telefon + '\'' +
+                ", angajat_Email='" + angajat_Email + '\'' +
+                ", angajat_Data_Angajare=" + angajat_Data_Angajare +
+                ", sediu_ID=" + sediu_ID +
                 '}';
     }
 }
