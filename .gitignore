@@ -1,9 +1,8 @@
 HELP.md
-backup
+backup/*.html
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/backup
 ### STS ###
 .apt_generated
 .classpath
