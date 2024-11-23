@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Angajati</title>
+</head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Lista Angajatilor</h1>
+
+        <div th:if="${successMessage != null and successMessage != ''}" class="alert alert-success" role="alert">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage != null and errorMessage != ''}" class="alert alert-danger" role="alert">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adauga Angajat</button>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nume</th>
+                <th>Prenume</th>
+                <th>Rol</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Sediu</th>
+                <th>Actiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="angajat : ${angajati}">
+                <td th:text="${angajat['Angajat_ID']}"></td>
+                <td th:text="${angajat['Angajat_Nume']}"></td>
+                <td th:text="${angajat['Angajat_Prenume']}"></td>
+                <td th:text="${angajat['Angajat_Rol']}"></td>
+                <td th:text="${angajat['Angajat_Email']}"></td>
+                <td th:text="${angajat['Angajat_Telefon']}"></td>
+                <td th:text="${angajat['Sediu_ID']} + ' - ' + ${angajat['Sediu_Nume']}"></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                            th:attr="data-id=${angajat['Angajat_ID']},
+                                     data-nume=${angajat['Angajat_Nume']},
+                                     data-prenume=${angajat['Angajat_Prenume']},
+                                     data-rol=${angajat['Angajat_Rol']},
+                                     data-email=${angajat['Angajat_Email']},
+                                     data-telefon=${angajat['Angajat_Telefon']},
+                                     data-sediu=${angajat['Sediu_ID']}">
+                        Editeaza
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            th:attr="data-id-th=${angajat['Angajat_ID']}">
+                        Sterge
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+<!-- Modal Adauga -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Adauga Angajat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/angajati/add}" method="post">
+                    <div class="mb-3">
+                        <label for="addNume" class="form-label">Nume</label>
+                        <input type="text" class="form-control" id="addNume" name="angajat_Nume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addPrenume" class="form-label">Prenume</label>
+                        <input type="text" class="form-control" id="addPrenume" name="angajat_Prenume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addRol" class="form-label">Rol</label>
+                        <input type="text" class="form-control" id="addRol" name="angajat_Rol" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="addEmail" name="angajat_Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addTelefon" class="form-label">Telefon</label>
+                        <input type="text" class="form-control" id="addTelefon" name="angajat_Telefon" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addSediu" class="form-label">Sediu</label>
+                        <select class="form-control" id="addSediu" name="sediu_ID" required>
+                            <option value="" disabled selected>Selecteaza un sediu</option>
+                            <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_ID} + ' - ' + ${sediu.sediu_Nume}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                        <button type="submit" class="btn btn-primary">Salveaza</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editeaza -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editeaza Angajat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/angajati/edit/}" method="post" id="editForm">
+
+                    <div class="mb-3">
+                        <label for="editNume" class="form-label">Nume</label>
+                        <input type="text" class="form-control" id="editNume" name="angajat_Nume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrenume" class="form-label">Prenume</label>
+                        <input type="text" class="form-control" id="editPrenume" name="angajat_Prenume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRol" class="form-label">Rol</label>
+                        <input type="text" class="form-control" id="editRol" name="angajat_Rol" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="angajat_Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTelefon" class="form-label">Telefon</label>
+                        <input type="text" class="form-control" id="editTelefon" name="angajat_Telefon" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSediu" class="form-label">Sediu</label>
+                        <select class="form-control" id="editSediu" name="sediu_ID" required>
+                            <option value="" disabled>Selecteaza un sediu</option>
+                            <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_ID} + ' - ' + ${sediu.sediu_Nume}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                        <button type="submit" class="btn btn-primary">Salveaza</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Sterge -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmare Stergere</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Esti sigur ca vrei sa stergi acest angajat?
+                <!-- ????????? poate pun ID angajat : th:value=${angajat.angajat_ID } -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Sterge</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var deleteModal = document.getElementById('deleteModal');
+        var confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var angajatId = button.getAttribute('data-id-th');
+            var deleteUrl = '/angajati/delete/' + angajatId;
+
+            confirmDeleteBtn.setAttribute('href', deleteUrl);
+        });
+        var editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            document.getElementById('editForm').action = '/angajati/edit/' + button.getAttribute('data-id');
+            document.getElementById('editNume').value = button.getAttribute('data-nume');
+            document.getElementById('editPrenume').value = button.getAttribute('data-prenume');
+            document.getElementById('editRol').value = button.getAttribute('data-rol');
+            document.getElementById('editEmail').value = button.getAttribute('data-email');
+            document.getElementById('editTelefon').value = button.getAttribute('data-telefon');
+            document.getElementById('editSediu').value = button.getAttribute('data-sediu');
+        });
+    });
+</script>
+
+</body>
+</html>
