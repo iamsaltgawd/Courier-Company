@@ -21,28 +21,31 @@
                 <th>Rol</th>
                 <th>Email</th>
                 <th>Telefon</th>
+                <th>Sediu</th>
                 <th>Actiuni</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="angajat : ${angajati}">
-                <td th:text="${angajat.angajat_ID}"></td>
-                <td th:text="${angajat.angajat_Nume}"></td>
-                <td th:text="${angajat.angajat_Prenume}"></td>
-                <td th:text="${angajat.angajat_Rol}"></td>
-                <td th:text="${angajat.angajat_Email}"></td>
-                <td th:text="${angajat.angajat_Telefon}"></td>
+                <td th:text="${angajat['Angajat_ID']}"></td>
+                <td th:text="${angajat['Angajat_Nume']}"></td>
+                <td th:text="${angajat['Angajat_Prenume']}"></td>
+                <td th:text="${angajat['Angajat_Rol']}"></td>
+                <td th:text="${angajat['Angajat_Email']}"></td>
+                <td th:text="${angajat['Angajat_Telefon']}"></td>
+                <td th:text="${angajat['Sediu_ID']} + ' - ' + ${angajat['Sediu_Nume']}"></td>
                 <td>
-                    <a th:href="@{'/angajati/edit/' + ${angajat.angajat_ID}}" class="btn btn-primary btn-sm">Editeaza</a>
+                    <a th:href="@{'/angajati/edit/' + ${angajat['Angajat_ID']}}" class="btn btn-primary btn-sm">Editeaza</a>
                     <button class="btn btn-danger btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#deleteModal"
-                            th:attr="data-id-th=${angajat.angajat_ID}">
+                            th:attr="data-id-th=${angajat['Angajat_ID']}">
                         Sterge
                     </button>
                 </td>
             </tr>
             </tbody>
+
         </table>
     </div>
 

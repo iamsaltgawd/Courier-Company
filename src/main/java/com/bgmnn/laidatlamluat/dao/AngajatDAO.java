@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class AngajatDAO {
@@ -21,6 +22,14 @@ public class AngajatDAO {
     public List<Angajat> findAll() {
         String query = "SELECT * FROM Angajati";
         return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Angajat.class));
+    }
+
+    public List<Map<String, Object>> findAllWithSediu() {
+        String query = "SELECT a.*, s.Sediu_Nume " +
+                "FROM Angajati a " +
+                "LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID";
+
+        return jdbcTemplate.queryForList(query);
     }
 
     public Angajat findById(int id) {
