@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Angajati</title>
+</head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Lista Angajatilor</h1>
+
+        <a href="/angajati/add" class="btn btn-primary mb-3">Adauga Angajat</a>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nume</th>
+                <th>Prenume</th>
+                <th>Rol</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Sediu</th>
+                <th>Actiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="angajat : ${angajati}">
+                <td th:text="${angajat['Angajat_ID']}"></td>
+                <td th:text="${angajat['Angajat_Nume']}"></td>
+                <td th:text="${angajat['Angajat_Prenume']}"></td>
+                <td th:text="${angajat['Angajat_Rol']}"></td>
+                <td th:text="${angajat['Angajat_Email']}"></td>
+                <td th:text="${angajat['Angajat_Telefon']}"></td>
+                <td th:text="${angajat['Sediu_ID']} + ' - ' + ${angajat['Sediu_Nume']}"></td>
+                <td>
+                    <a th:href="@{'/angajati/edit/' + ${angajat['Angajat_ID']}}" class="btn btn-primary btn-sm">Editeaza</a>
+                    <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            th:attr="data-id-th=${angajat['Angajat_ID']}">
+                        Sterge
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmare Stergere</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Esti sigur ca vrei sa stergi acest angajat?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Sterge</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var deleteModal = document.getElementById('deleteModal');
+        var confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var angajatId = button.getAttribute('data-id-th');
+            var deleteUrl = '/angajati/delete/' + angajatId;
+
+            confirmDeleteBtn.setAttribute('href', deleteUrl);
+        });
+    });
+</script>
+
+</body>
+</html>
