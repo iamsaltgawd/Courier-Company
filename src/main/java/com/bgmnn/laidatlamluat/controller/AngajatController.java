@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,60 @@ public class AngajatController {
     private SediuService sediuService;
 
     @GetMapping
-    public String listAngajati(Model model) {
+    public String listAngajati(Model model, @ModelAttribute("successMessage") String successMessage,
+                               @ModelAttribute("errorMessage") String errorMessage) {
         List<Map<String, Object>> angajati = angajatService.getAllAngajatiWithSediu();
+        List<Sediu> sedii = sediuService.getAllSedii();
         model.addAttribute("title", "Angajati");
-        model.addAttribute("angajati", angajati);
         model.addAttribute("activePage", "angajati");
+        model.addAttribute("angajati", angajati);
+        model.addAttribute("sedii", sedii);
+
+        if (successMessage != null && !successMessage.isEmpty()) {
+            model.addAttribute("successMessage", successMessage);
+        }
+        if (errorMessage != null && !errorMessage.isEmpty()) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
+
         return "angajati/index";
     }
 
+    @PostMapping("/add")
+    public String addAngajat(@ModelAttribute Angajat angajat, RedirectAttributes redirectAttributes) {
+        try {
+            angajatService.addAngajat(angajat);
+            redirectAttributes.addFlashAttribute("successMessage", "Angajat adaugat cu succes!");
+            return "redirect:/angajati";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/angajati";
+        }
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateAngajat(@PathVariable int id, @ModelAttribute Angajat angajat, RedirectAttributes redirectAttributes) {
+        try {
+            angajat.setAngajat_ID(id);
+            angajatService.updateAngajat(angajat);
+            redirectAttributes.addFlashAttribute("successMessage", "Angajat actualizat cu succes!");
+            return "redirect:/angajati";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/angajati";
+        }
+    }
+
+
+    @GetMapping("/delete/{id}")
+    public String deleteAngajat(@PathVariable int id, RedirectAttributes redirectAttributes) {
+        angajatService.deleteAngajat(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Angajat sters cu succes!");
+        return "redirect:/angajati";
+    }
+
+    // add.html
+    /*
     @GetMapping("/add")
     public String showAddForm(Model model) {
         List<Sediu> sedii = sediuService.getAllSedii();
@@ -39,22 +86,10 @@ public class AngajatController {
         model.addAttribute("title", "Adauga angajat");
         return "angajati/add";
     }
+    */
 
-    @PostMapping("/add")
-    public String addAngajat(@ModelAttribute Angajat angajat, Model model) {
-        try {
-            angajatService.addAngajat(angajat);
-            return "redirect:/angajati";
-        } catch (IllegalArgumentException e) {
-            List<Sediu> sedii = sediuService.getAllSedii();
-            model.addAttribute("sedii", sedii);
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("angajat", angajat);
-            return "angajati/add";
-        }
-    }
-
-
+    // edit.html
+    /*
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
         Angajat angajat = angajatService.getAngajatById(id);
@@ -64,27 +99,5 @@ public class AngajatController {
         model.addAttribute("title", "Editeaza angajat");
         return "angajati/edit";
     }
-
-    @PostMapping("/edit/{id}")
-    public String updateAngajat(@PathVariable int id, @ModelAttribute Angajat angajat, Model model) {
-        try {
-            angajat.setAngajat_ID(id);
-            angajatService.updateAngajat(angajat);
-            return "redirect:/angajati";
-        } catch (IllegalArgumentException e) {
-            List<Sediu> sedii = sediuService.getAllSedii();
-            model.addAttribute("sedii", sedii);
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("angajat", angajat);
-            return "angajati/edit";
-        }
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteAngajat(@PathVariable int id) {
-        angajatService.deleteAngajat(id);
-        return "redirect:/angajati";
-    }
-
-
+    */
 }

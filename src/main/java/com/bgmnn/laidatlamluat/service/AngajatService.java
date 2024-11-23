@@ -34,9 +34,7 @@ public class AngajatService {
     }
 
     public void updateAngajat(Angajat angajat) {
-        String query = "SELECT COUNT(*) FROM Angajati WHERE Angajat_Email = ? AND Angajat_ID != ?";
-        Integer count = angajatDAO.getJdbcTemplate().queryForObject(query, Integer.class, angajat.getAngajat_Email(), angajat.getAngajat_ID());
-        if (count != null && count > 0) {
+        if (isDuplicateEmail(angajat.getAngajat_Email(), angajat.getAngajat_ID())) {
             throw new IllegalArgumentException("Emailul exista deja la alt utilizator!");
         }
         angajatDAO.update(angajat);
@@ -44,5 +42,11 @@ public class AngajatService {
 
     public void deleteAngajat(int id) {
         angajatDAO.deleteById(id);
+    }
+
+    public boolean isDuplicateEmail(String email, int angajatId) {
+        String query = "SELECT COUNT(*) FROM Angajati WHERE Angajat_Email = ? AND Angajat_ID != ?";
+        Integer count = angajatDAO.getJdbcTemplate().queryForObject(query, Integer.class, email, angajatId);
+        return count != null && count > 0;
     }
 }
