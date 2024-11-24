@@ -63,6 +63,32 @@
             </tbody>
 
         </table>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div>
+                <label for="itemsPerPage" class="form-label me-2">Itemi per pagina:</label>
+                <select id="itemsPerPage" class="form-select" style="width: auto; display: inline-block;" onchange="changeItemsPerPage()">
+                    <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+                    <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+                    <option value="50" th:selected="${itemsPerPage == 50}">50</option>
+                </select>
+            </div>
+            <div class="pagination-controls">
+                <a class="btn btn-secondary"
+                   th:if="${currentPage > 0}"
+                   th:href="@{/angajati(page=${currentPage - 1}, size=${itemsPerPage})}">
+                    &lt;
+                </a>
+
+                <span th:text="${startItem} + ' - ' + ${endItem} + ' din ' + ${totalItems}"></span>
+
+                <a class="btn btn-secondary"
+                   th:if="${(currentPage + 1) * itemsPerPage < totalItems}"
+                   th:href="@{/angajati(page=${currentPage + 1}, size=${itemsPerPage})}">
+                    &gt;
+                </a>
+            </div>
+
+        </div>
     </div>
 
     <footer th:replace="layout/fragments :: footer"></footer>
@@ -206,6 +232,10 @@
             document.getElementById('editSediu').value = button.getAttribute('data-sediu');
         });
     });
+    function changeItemsPerPage() {
+        var itemsPerPage = document.getElementById('itemsPerPage').value;
+        window.location.href = '/angajati?page=0&size=' + itemsPerPage;
+    }
 </script>
 
 </body>

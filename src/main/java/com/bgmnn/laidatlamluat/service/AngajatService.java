@@ -49,4 +49,14 @@ public class AngajatService {
         Integer count = angajatDAO.getJdbcTemplate().queryForObject(query, Integer.class, email, angajatId);
         return count != null && count > 0;
     }
+
+    public List<Map<String, Object>> getAngajatiWithPagination(int page, int size) {
+        int offset = page * size;
+        return angajatDAO.findAllWithPagination(size, offset);
+    }
+
+    public int countAngajati() {
+        return angajatDAO.count();
+    }
+
 }

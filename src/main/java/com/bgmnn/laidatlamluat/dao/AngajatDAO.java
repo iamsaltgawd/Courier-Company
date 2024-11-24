@@ -74,4 +74,14 @@ public class AngajatDAO {
         return count != null && count > 0;
     }
 
+    public List<Map<String, Object>> findAllWithPagination(int size, int offset) {
+        String query = "SELECT a.*, s.Sediu_Nume FROM Angajati a LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID LIMIT ? OFFSET ?";
+        return jdbcTemplate.queryForList(query, size, offset);
+    }
+
+    public int count() {
+        String query = "SELECT COUNT(*) FROM Angajati";
+        return jdbcTemplate.queryForObject(query, Integer.class);
+    }
+
 }

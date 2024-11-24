@@ -24,14 +24,26 @@ public class AngajatController {
     private SediuService sediuService;
 
     @GetMapping
-    public String listAngajati(Model model, @ModelAttribute("successMessage") String successMessage,
+    public String listAngajati(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               Model model, @ModelAttribute("successMessage") String successMessage,
                                @ModelAttribute("errorMessage") String errorMessage) {
-        List<Map<String, Object>> angajati = angajatService.getAllAngajatiWithSediu();
+        List<Map<String, Object>> angajati = angajatService.getAngajatiWithPagination(page, size);
         List<Sediu> sedii = sediuService.getAllSedii();
+        int totalItems = angajatService.countAngajati();
+
+        int startItem = page * size + 1;
+        int endItem = Math.min((page + 1) * size, totalItems);
+
         model.addAttribute("title", "Angajati");
         model.addAttribute("activePage", "angajati");
         model.addAttribute("angajati", angajati);
         model.addAttribute("sedii", sedii);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("itemsPerPage", size);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("startItem", startItem);
+        model.addAttribute("endItem", endItem);
 
         if (successMessage != null && !successMessage.isEmpty()) {
             model.addAttribute("successMessage", successMessage);
