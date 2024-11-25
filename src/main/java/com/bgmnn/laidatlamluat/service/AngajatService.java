@@ -5,6 +5,7 @@ import com.bgmnn.laidatlamluat.model.Angajat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,15 @@ public class AngajatService {
 
     public int countAngajati() {
         return angajatDAO.count();
+    }
+
+    public List<Map<String, Object>> filterAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu, int page, int size) {
+        int offset = page * size;
+        return angajatDAO.filterAngajati(nume, prenume, rol, email, telefon, sediu, size, offset);
+    }
+
+    public int countFilteredAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu) {
+        return angajatDAO.countFilteredAngajati(nume, prenume, rol, email, telefon, sediu);
     }
 
 }

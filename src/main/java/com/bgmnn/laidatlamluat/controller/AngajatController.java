@@ -26,11 +26,17 @@ public class AngajatController {
     @GetMapping
     public String listAngajati(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(required = false) String nume,
+                               @RequestParam(required = false) String prenume,
+                               @RequestParam(required = false) String rol,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String telefon,
+                               @RequestParam(required = false) Integer sediu,
                                Model model, @ModelAttribute("successMessage") String successMessage,
                                @ModelAttribute("errorMessage") String errorMessage) {
-        List<Map<String, Object>> angajati = angajatService.getAngajatiWithPagination(page, size);
+        List<Map<String, Object>> angajati = angajatService.filterAngajati(nume, prenume, rol, email, telefon, sediu, page, size);
         List<Sediu> sedii = sediuService.getAllSedii();
-        int totalItems = angajatService.countAngajati();
+        int totalItems = angajatService.countFilteredAngajati(nume, prenume, rol, email, telefon, sediu);
 
         int startItem = page * size + 1;
         int endItem = Math.min((page + 1) * size, totalItems);
@@ -44,6 +50,12 @@ public class AngajatController {
         model.addAttribute("totalItems", totalItems);
         model.addAttribute("startItem", startItem);
         model.addAttribute("endItem", endItem);
+        model.addAttribute("nume", nume);
+        model.addAttribute("prenume", prenume);
+        model.addAttribute("rol", rol);
+        model.addAttribute("email", email);
+        model.addAttribute("telefon", telefon);
+        model.addAttribute("sediu", sediu);
 
         if (successMessage != null && !successMessage.isEmpty()) {
             model.addAttribute("successMessage", successMessage);

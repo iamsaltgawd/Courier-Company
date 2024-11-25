@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,4 +85,81 @@ public class AngajatDAO {
         return jdbcTemplate.queryForObject(query, Integer.class);
     }
 
+    public List<Map<String, Object>> filterAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu, int size, int offset) {
+        StringBuilder query = new StringBuilder("SELECT a.*, s.Sediu_Nume FROM Angajati a LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (nume != null && !nume.isEmpty()) {
+            query.append(" AND a.Angajat_Nume LIKE ?");
+            params.add("%" + nume + "%");
+        }
+
+        if (prenume != null && !prenume.isEmpty()) {
+            query.append(" AND a.Angajat_Prenume LIKE ?");
+            params.add("%" + prenume + "%");
+        }
+
+        if (rol != null && !rol.isEmpty()) {
+            query.append(" AND a.Angajat_Rol LIKE ?");
+            params.add("%" + rol + "%");
+        }
+
+        if (email != null && !email.isEmpty()) {
+            query.append(" AND a.Angajat_Email LIKE ?");
+            params.add("%" + email + "%");
+        }
+
+        if (telefon != null && !telefon.isEmpty()) {
+            query.append(" AND a.Angajat_Telefon LIKE ?");
+            params.add("%" + telefon + "%");
+        }
+
+        if (sediu != null) {
+            query.append(" AND a.Sediu_ID = ?");
+            params.add(sediu);
+        }
+
+        query.append(" LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(offset);
+
+        return jdbcTemplate.queryForList(query.toString(), params.toArray());
+    }
+
+    public int countFilteredAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu) {
+        StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM Angajati a WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (nume != null && !nume.isEmpty()) {
+            query.append(" AND a.Angajat_Nume LIKE ?");
+            params.add("%" + nume + "%");
+        }
+
+        if (prenume != null && !prenume.isEmpty()) {
+            query.append(" AND a.Angajat_Prenume LIKE ?");
+            params.add("%" + prenume + "%");
+        }
+
+        if (rol != null && !rol.isEmpty()) {
+            query.append(" AND a.Angajat_Rol LIKE ?");
+            params.add("%" + rol + "%");
+        }
+
+        if (email != null && !email.isEmpty()) {
+            query.append(" AND a.Angajat_Email LIKE ?");
+            params.add("%" + email + "%");
+        }
+
+        if (telefon != null && !telefon.isEmpty()) {
+            query.append(" AND a.Angajat_Telefon LIKE ?");
+            params.add("%" + telefon + "%");
+        }
+
+        if (sediu != null) {
+            query.append(" AND a.Sediu_ID = ?");
+            params.add(sediu);
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), params.toArray(), Integer.class);
+    }
 }
