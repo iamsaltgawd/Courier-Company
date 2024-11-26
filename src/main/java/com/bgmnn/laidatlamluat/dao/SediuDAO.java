@@ -36,7 +36,8 @@ public class SediuDAO {
     }
 
     public void update(Sediu sediu) {
-        String query = "UPDATE Sedii SET Sediu_Nume = ?, Sediu_Adresa = ?, Sediu_Telefon = ?, Sediu_Email = ?, Sediu_Orar_Functionare = ? WHERE Sediu_ID = ?";
+        String query = "UPDATE Sedii SET Sediu_Nume = ?, Sediu_Adresa = ?, Sediu_Telefon = ?," +
+                " Sediu_Email = ?, Sediu_Orar_Functionare = ? WHERE Sediu_ID = ?";
         jdbcTemplate.update(query,
                 sediu.getSediu_Nume(),
                 sediu.getSediu_Adresa(),
