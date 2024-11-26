@@ -76,7 +76,8 @@ public class AngajatDAO {
     }
 
     public List<Map<String, Object>> findAllWithPagination(int size, int offset) {
-        String query = "SELECT a.*, s.Sediu_Nume FROM Angajati a LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID LIMIT ? OFFSET ?";
+        String query = "SELECT a.*, s.Sediu_Nume FROM Angajati a " +
+                "LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID LIMIT ? OFFSET ?";
         return jdbcTemplate.queryForList(query, size, offset);
     }
 
@@ -85,9 +86,16 @@ public class AngajatDAO {
         return jdbcTemplate.queryForObject(query, Integer.class);
     }
 
-    public List<Map<String, Object>> filterAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu, int size, int offset) {
-        StringBuilder query = new StringBuilder("SELECT a.*, s.Sediu_Nume FROM Angajati a LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID WHERE 1=1");
+    public List<Map<String, Object>> filterAngajati(Integer id, String nume, String prenume, String rol, String email,
+                                                    String telefon, Integer sediu, int size, int offset) {
+        StringBuilder query = new StringBuilder("SELECT a.*, s.Sediu_Nume FROM Angajati a " +
+                "LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID WHERE 1=1");
         List<Object> params = new ArrayList<>();
+
+        if (id != null && id != 0) {
+            query.append(" AND a.Angajat_ID = ?");
+            params.add(id);
+        }
 
         if (nume != null && !nume.isEmpty()) {
             query.append(" AND a.Angajat_Nume LIKE ?");
@@ -126,9 +134,15 @@ public class AngajatDAO {
         return jdbcTemplate.queryForList(query.toString(), params.toArray());
     }
 
-    public int countFilteredAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu) {
+    public int countFilteredAngajati(Integer id, String nume, String prenume, String rol,
+                                     String email, String telefon, Integer sediu) {
         StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM Angajati a WHERE 1=1");
         List<Object> params = new ArrayList<>();
+
+        if (id != null && id != 0) {
+            query.append(" AND a.Angajat_ID = ?");
+            params.add(id);
+        }
 
         if (nume != null && !nume.isEmpty()) {
             query.append(" AND a.Angajat_Nume LIKE ?");
@@ -162,4 +176,5 @@ public class AngajatDAO {
 
         return jdbcTemplate.queryForObject(query.toString(), params.toArray(), Integer.class);
     }
+
 }

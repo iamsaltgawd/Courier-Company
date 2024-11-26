@@ -26,6 +26,7 @@ public class AngajatController {
     @GetMapping
     public String listAngajati(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(required = false) Integer id,
                                @RequestParam(required = false) String nume,
                                @RequestParam(required = false) String prenume,
                                @RequestParam(required = false) String rol,
@@ -34,9 +35,10 @@ public class AngajatController {
                                @RequestParam(required = false) Integer sediu,
                                Model model, @ModelAttribute("successMessage") String successMessage,
                                @ModelAttribute("errorMessage") String errorMessage) {
-        List<Map<String, Object>> angajati = angajatService.filterAngajati(nume, prenume, rol, email, telefon, sediu, page, size);
+        List<Map<String, Object>> angajati = angajatService.filterAngajati(id, nume, prenume, rol,
+                email, telefon, sediu, page, size);
         List<Sediu> sedii = sediuService.getAllSedii();
-        int totalItems = angajatService.countFilteredAngajati(nume, prenume, rol, email, telefon, sediu);
+        int totalItems = angajatService.countFilteredAngajati(id, nume, prenume, rol, email, telefon, sediu);
 
         int startItem = page * size + 1;
         int endItem = Math.min((page + 1) * size, totalItems);
@@ -50,6 +52,7 @@ public class AngajatController {
         model.addAttribute("totalItems", totalItems);
         model.addAttribute("startItem", startItem);
         model.addAttribute("endItem", endItem);
+        model.addAttribute("id", id);
         model.addAttribute("nume", nume);
         model.addAttribute("prenume", prenume);
         model.addAttribute("rol", rol);
@@ -80,7 +83,8 @@ public class AngajatController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateAngajat(@PathVariable int id, @ModelAttribute Angajat angajat, RedirectAttributes redirectAttributes) {
+    public String updateAngajat(@PathVariable int id, @ModelAttribute Angajat angajat,
+                                RedirectAttributes redirectAttributes) {
         try {
             angajat.setAngajat_ID(id);
             angajatService.updateAngajat(angajat);

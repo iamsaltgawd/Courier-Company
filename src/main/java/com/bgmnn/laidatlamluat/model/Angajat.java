@@ -14,7 +14,8 @@ public class Angajat {
 
     public Angajat() {}
 
-    public Angajat(int angajat_ID, String angajat_Nume, String angajat_Prenume, String angajat_Rol, String angajat_Telefon, String angajat_Email, Date angajat_Data_Angajare, int sediu_ID) {
+    public Angajat(int angajat_ID, String angajat_Nume, String angajat_Prenume, String angajat_Rol,
+                   String angajat_Telefon, String angajat_Email, Date angajat_Data_Angajare, int sediu_ID) {
         this.angajat_ID = angajat_ID;
         this.angajat_Nume = angajat_Nume;
         this.angajat_Prenume = angajat_Prenume;

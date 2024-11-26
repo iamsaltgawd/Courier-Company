@@ -60,13 +60,16 @@ public class AngajatService {
         return angajatDAO.count();
     }
 
-    public List<Map<String, Object>> filterAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu, int page, int size) {
+    public List<Map<String, Object>> filterAngajati(Integer id, String nume, String prenume, String rol, String email,
+                                                    String telefon, Integer sediu, int page, int size) {
         int offset = page * size;
-        return angajatDAO.filterAngajati(nume, prenume, rol, email, telefon, sediu, size, offset);
+        return angajatDAO.filterAngajati(id, nume, prenume, rol, email, telefon, sediu, size, offset);
     }
 
-    public int countFilteredAngajati(String nume, String prenume, String rol, String email, String telefon, Integer sediu) {
-        return angajatDAO.countFilteredAngajati(nume, prenume, rol, email, telefon, sediu);
+    public int countFilteredAngajati(Integer id, String nume, String prenume, String rol,
+                                     String email, String telefon, Integer sediu) {
+        return angajatDAO.countFilteredAngajati(id, nume, prenume, rol, email, telefon, sediu);
     }
+
 
 }
