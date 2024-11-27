@@ -43,7 +43,7 @@ public class AngajatController {
         int startItem = page * size + 1;
         int endItem = Math.min((page + 1) * size, totalItems);
 
-        model.addAttribute("title", "Angajati");
+        model.addAttribute("title", "LAIDATLAMLUAT");
         model.addAttribute("activePage", "angajati");
         model.addAttribute("angajati", angajati);
         model.addAttribute("sedii", sedii);

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">LAIDATLAMLUAT</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <script th:src="@{/js/bootstrap.bundle.js}"></script>
 
@@ -25,7 +26,9 @@
 <body>
 <header class="bg-light border-bottom mb-3" th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-light container">
-        <a class="navbar-brand" href="/">LAIDATLAMLUAT</a>
+        <a class="navbar-brand" href="/">
+            <img src="/images/logo.png" alt="Logo" width="32" height="32" class="d-inline-block align-text-top">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
