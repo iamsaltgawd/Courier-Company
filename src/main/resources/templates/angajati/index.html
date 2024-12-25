@@ -8,7 +8,7 @@
     <header th:replace="layout/fragments :: header"></header>
 
     <div id="content-wrap" class="container py-5">
-        <h1 class="mb-4">Lista Angajatilor</h1>
+        <h1 class="mb-4">Lista Angajatilor LAIDATLAMLUAT</h1>
 
         <div th:if="${successMessage != null and successMessage != ''}" class="alert alert-success" role="alert">
             <p th:text="${successMessage}"></p>
@@ -40,12 +40,13 @@
                             <option value="" th:selected="${sediu == null or sediu == ''}">Selecteaza un sediu</option>
                             <option th:each="s : ${sedii}"
                                     th:value="${s.sediu_ID}"
-                                    th:text="${s.sediu_Nume}"
+                                    th:text="${s.sediu_ID} + ' - ' + ${s.sediu_Nume}"
                                     th:selected="${sediu != null and sediu.toString() == s.sediu_ID.toString()}"></option>
                         </select>
                     </div>
 
-                    <div class="col-md-3 d-flex justify-content-end">
+                    <div class="col-md-3 justify-content-end">
+                        <button type="submit" class="btn btn-danger">Reseteaza Filtre</button>
                         <button type="submit" class="btn btn-primary">Filtreaza</button>
                     </div>
 
@@ -70,7 +71,6 @@
 
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adauga Angajat</button>
 
-        <!-- Paginare -->
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -107,13 +107,14 @@
                     <button class="btn btn-danger btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#deleteModal"
-                            th:attr="data-id-th=${angajat['Angajat_ID']}">
+                            th:attr="data-id-th=${angajat['Angajat_ID']}, data-nume-th=${angajat['Angajat_Nume']},
+                                    data-prenume-th=${angajat['Angajat_Prenume']}">
                         Sterge
                     </button>
                 </td>
             </tr>
             </tbody>
-
+        <!-- Paginare -->
         </table>
         <div class="d-flex justify-content-between align-items-center mt-4">
             <div>
@@ -160,27 +161,32 @@
                 <form th:action="@{/angajati/add}" method="post">
                     <div class="mb-3">
                         <label for="addNume" class="form-label">Nume</label>
-                        <input type="text" class="form-control" id="addNume" name="angajat_Nume" required>
+                        <input type="text" class="form-control" id="addNume" name="angajat_Nume" required
+                               oninvalid="this.setCustomValidity('NUMELEE')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="addPrenume" class="form-label">Prenume</label>
-                        <input type="text" class="form-control" id="addPrenume" name="angajat_Prenume" required>
+                        <input type="text" class="form-control" id="addPrenume" name="angajat_Prenume" required
+                               oninvalid="this.setCustomValidity('introdu prenumele')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="addRol" class="form-label">Rol</label>
-                        <input type="text" class="form-control" id="addRol" name="angajat_Rol" required>
+                        <input type="text" class="form-control" id="addRol" name="angajat_Rol" required
+                               oninvalid="this.setCustomValidity('completeaza rolul')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="addEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="addEmail" name="angajat_Email" required>
+                        <input type="email" class="form-control" id="addEmail" name="angajat_Email" required
+                               oninvalid="this.setCustomValidity('email invalid')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="addTelefon" class="form-label">Telefon</label>
-                        <input type="text" class="form-control" id="addTelefon" name="angajat_Telefon" required>
+                        <input type="text" class="form-control" id="addTelefon" name="angajat_Telefon">
                     </div>
                     <div class="mb-3">
                         <label for="addSediu" class="form-label">Sediu</label>
-                        <select class="form-control" id="addSediu" name="sediu_ID" required>
+                        <select class="form-control" id="addSediu" name="sediu_ID" required
+                                oninvalid="this.setCustomValidity('alege un sediu')" oninput="this.setCustomValidity('')">
                             <option value="" disabled selected>Selecteaza un sediu</option>
                             <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_ID} + ' - ' + ${sediu.sediu_Nume}"></option>
                         </select>
@@ -207,27 +213,32 @@
 
                     <div class="mb-3">
                         <label for="editNume" class="form-label">Nume</label>
-                        <input type="text" class="form-control" id="editNume" name="angajat_Nume" required>
+                        <input type="text" class="form-control" id="editNume" name="angajat_Nume" required
+                               oninvalid="this.setCustomValidity('NUMELEE')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="editPrenume" class="form-label">Prenume</label>
-                        <input type="text" class="form-control" id="editPrenume" name="angajat_Prenume" required>
+                        <input type="text" class="form-control" id="editPrenume" name="angajat_Prenume" required
+                               oninvalid="this.setCustomValidity('introdu prenumele')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="editRol" class="form-label">Rol</label>
-                        <input type="text" class="form-control" id="editRol" name="angajat_Rol" required>
+                        <input type="text" class="form-control" id="editRol" name="angajat_Rol" required
+                               oninvalid="this.setCustomValidity('completeaza rolul')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="editEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="angajat_Email" required>
+                        <input type="email" class="form-control" id="editEmail" name="angajat_Email" required
+                               oninvalid="this.setCustomValidity('email invalid')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label for="editTelefon" class="form-label">Telefon</label>
-                        <input type="text" class="form-control" id="editTelefon" name="angajat_Telefon" required>
+                        <input type="text" class="form-control" id="editTelefon" name="angajat_Telefon">
                     </div>
                     <div class="mb-3">
                         <label for="editSediu" class="form-label">Sediu</label>
-                        <select class="form-control" id="editSediu" name="sediu_ID" required>
+                        <select class="form-control" id="editSediu" name="sediu_ID" required
+                                oninvalid="this.setCustomValidity('alege un sediu')" oninput="this.setCustomValidity('')">
                             <option value="" disabled>Selecteaza un sediu</option>
                             <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_ID} + ' - ' + ${sediu.sediu_Nume}"></option>
                         </select>
@@ -250,8 +261,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Esti sigur ca vrei sa stergi acest angajat?
-                <!-- ????????? poate pun ID angajat : th:value=${angajat.angajat_ID } -->
+                <strong>
+                    Esti sigur ca vrei sa stergi acest angajat?
+                </strong>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
@@ -322,4 +334,4 @@
 </body>
 </html>
 
-<!-- fara js-->
+<!-- mesaju de hover -->

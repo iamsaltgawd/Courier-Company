@@ -76,7 +76,7 @@ public class AngajatDAO {
     }
 
     public List<Map<String, Object>> findAllWithPagination(int size, int offset) {
-        String query = "SELECT a.*, s.Sediu_Nume FROM Angajati a " +
+        String query = "SELECT a.*, s.Sediu_Sediu_ID Nume FROM Angajati a " +
                 "LEFT JOIN Sedii s ON a.Sediu_ID = s.Sediu_ID LIMIT ? OFFSET ?";
         return jdbcTemplate.queryForList(query, size, offset);
     }

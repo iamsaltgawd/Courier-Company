@@ -61,7 +61,8 @@ public class AngajatService {
     }
 
     public List<Map<String, Object>> filterAngajati(Integer id, String nume, String prenume, String rol, String email,
-                                                    String telefon, Integer sediu, int page, int size) {
+
+            String telefon, Integer sediu, int page, int size) {
         int offset = page * size;
         return angajatDAO.filterAngajati(id, nume, prenume, rol, email, telefon, sediu, size, offset);
     }
