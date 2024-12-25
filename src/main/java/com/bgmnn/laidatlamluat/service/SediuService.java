@@ -32,4 +32,7 @@ public class SediuService {
     public void deleteSediu(int id) {
         sediuDAO.deleteById(id);
     }
+
+
+
 }

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Sedii</title>
+</head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Lista Sediilor</h1>
+
+        <div th:if="${successMessage != null and errorMessage != ''}" class="alert alert-success" role="alert">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage != null and errorMessage != ''}" class="alert alert-danger" role="alert">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adauga Sediu</button>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nume</th>
+                <th>Adresa</th>
+                <th>Telefon</th>
+                <th>Email</th>
+                <th>Orar Functionare</th>
+                <th>Actiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sediu : ${sedii}">
+                <td th:text="${sediu.sediu_ID}"></td>
+                <td th:text="${sediu.sediu_Nume}"></td>
+                <td th:text="${sediu.sediu_Adresa}"></td>
+                <td th:text="${sediu.sediu_Telefon}"></td>
+                <td th:text="${sediu.sediu_Email}"></td>
+                <td th:text="${sediu.sediu_Orar_Functionare}"></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            th:data-bs-target="'#editModal_' + ${sediu.sediu_ID}">Editeaza</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            th:data-bs-target="'#deleteModal_' + ${sediu.sediu_ID}">Sterge</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<!-- Modal Adauga -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Adauga Sediu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/sedii/add}" method="post">
+                    <div class="mb-3">
+                        <label for="addNume" class="form-label">Nume</label>
+                        <input type="text" class="form-control" id="addNume" name="sediu_Nume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addAdresa" class="form-label">Adresa</label>
+                        <input type="text" class="form-control" id="addAdresa" name="sediu_Adresa" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addTelefon" class="form-label">Telefon</label>
+                        <input type="text" class="form-control" id="addTelefon" name="sediu_Telefon" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="addEmail" name="sediu_Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addOrar" class="form-label">Orar Functionare</label>
+                        <input type="text" class="form-control" id="addOrar" name="sediu_Orar_Functionare" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                        <button type="submit" class="btn btn-primary">Salveaza</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:each="sediu : ${sedii}">
+    <!-- Modal Editare -->
+    <div class="modal fade" th:id="'editModal_' + ${sediu.sediu_ID}" tabindex="-1" aria-labelledby="editModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editeaza Sediu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/sedii/edit/{id}(id=${sediu.sediu_ID})}" method="post">
+                        <div class="mb-3">
+                            <label for="editNume" class="form-label">Nume</label>
+                            <input type="text" class="form-control" id="editNume" name="sediu_Nume"
+                                   th:value="${sediu.sediu_Nume}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAdresa" class="form-label">Adresa</label>
+                            <input type="text" class="form-control" id="editAdresa" name="sediu_Adresa"
+                                   th:value="${sediu.sediu_Adresa}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTelefon" class="form-label">Telefon</label>
+                            <input type="text" class="form-control" id="editTelefon" name="sediu_Telefon"
+                                   th:value="${sediu.sediu_Telefon}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="sediu_Email"
+                                   th:value="${sediu.sediu_Email}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editOrar" class="form-label">Orar Functionare</label>
+                            <input type="text" class="form-control" id="editOrar" name="sediu_Orar_Functionare"
+                                   th:value="${sediu.sediu_Orar_Functionare}" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                            <button type="submit" class="btn btn-primary">Salveaza</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Stergere -->
+    <div class="modal fade" th:id="'deleteModal_' + ${sediu.sediu_ID}" tabindex="-1" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Sterge Sediu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Esti sigur ca vrei sa stergi sediul "<span th:text="${sediu.sediu_Nume}"></span>"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaza</button>
+                    <a th:href="@{/sedii/delete/{id}(id=${sediu.sediu_ID})}" class="btn btn-danger">Sterge</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
