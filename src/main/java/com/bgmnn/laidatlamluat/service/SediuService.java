@@ -1,3 +1,11 @@
+
+
+/** Clasa care apeleaza functiile din fisierele sursa de tipul [*]DAO
+ * @author Calavri Mircea-Cristian
+ * @version 7 ianuarie 2025
+ */
+
+
 package com.bgmnn.laidatlamluat.service;
 
 import com.bgmnn.laidatlamluat.dao.SediuDAO;

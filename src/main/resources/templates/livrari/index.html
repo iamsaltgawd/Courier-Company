@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Livrări</title>
+</head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Lista Livrărilor</h1>
+
+        <!-- Mesaje de succes și eroare -->
+        <div th:if="${successMessage != null and successMessage != ''}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage != null and errorMessage != ''}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <!-- Bara de filtre -->
+        <div class="card my-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Filtrare Livrări</h5>
+                <button type="button" class="btn btn-link" id="toggleAdvancedFilters">&#x25BE;</button>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/livrari}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="livrareId" name="id" th:value="${id}" placeholder="ID Livrare"
+                               oninput="validateInput(this)">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="data" name="data" th:value="${data}" placeholder="Data Livrare">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="status" name="status">
+                            <option value="" th:selected="${status == null or status == ''}">Selectează Status</option>
+                            <option value="In Pregatire" th:selected="${status == 'In Pregatire'}">În Pregătire</option>
+                            <option value="In Tranzit" th:selected="${status == 'In Tranzit'}">În Tranzit</option>
+                            <option value="Livrata" th:selected="${status == 'Livrata'}">Livrată</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="resetFilters" class="btn btn-danger">Resetează Filtre</button>
+                        <button type="submit" class="btn btn-primary">Filtrează</button>
+                    </div>
+                    <div id="advancedFilters" class="row g-3 mt-2" style="display: none;">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="comandaId" name="comandaId" th:value="${comandaId}" placeholder="ID Comandă"
+                                   oninput="validateInput(this)">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="angajatId" name="angajatId" th:value="${angajatId}" placeholder="ID Angajat"
+                                   oninput="validateInput(this)">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="vehiculId" name="vehiculId" th:value="${vehiculId}" placeholder="ID Vehicul"
+                                   oninput="validateInput(this)">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Adaugă -->
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/livrari/add}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addModalLabel">Adaugă Livrare</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="addData" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="addData" name="livrare_Data" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addOra" class="form-label">Ora</label>
+                                <input type="time" class="form-control" id="addOra" name="livrare_Ora" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addStatus" class="form-label">Status</label>
+                                <select class="form-control" id="addStatus" name="livrare_Status" required>
+                                    <option value="In Pregatire">În Pregătire</option>
+                                    <option value="In Tranzit">În Tranzit</option>
+                                    <option value="Livrata">Livrată</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addComandaId" class="form-label">ID Comandă</label>
+                                <input type="number" class="form-control" id="addComandaId" name="comanda_ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addAngajatId" class="form-label">ID Angajat</label>
+                                <input type="number" class="form-control" id="addAngajatId" name="angajat_ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addVehiculId" class="form-label">ID Vehicul</label>
+                                <input type="number" class="form-control" id="addVehiculId" name="vehicul_ID" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                            <button type="submit" class="btn btn-primary">Salvează</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Editare -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/livrari/edit/{id}(id=${editId})}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Editează Livrare</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editId" name="livrare_ID">
+                            <div class="mb-3">
+                                <label for="editData" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="editData" name="livrare_Data" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editOra" class="form-label">Ora</label>
+                                <input type="time" class="form-control" id="editOra" name="livrare_Ora" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editStatus" class="form-label">Status</label>
+                                <select class="form-control" id="editStatus" name="livrare_Status" required>
+                                    <option value="In Pregatire">În Pregătire</option>
+                                    <option value="In Tranzit">În Tranzit</option>
+                                    <option value="Livrata">Livrată</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editComandaId" class="form-label">ID Comandă</label>
+                                <input type="number" class="form-control" id="editComandaId" name="comanda_ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editAngajatId" class="form-label">ID Angajat</label>
+                                <input type="number" class="form-control" id="editAngajatId" name="angajat_ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editVehiculId" class="form-label">ID Vehicul</label>
+                                <input type="number" class="form-control" id="editVehiculId" name="vehicul_ID" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                            <button type="submit" class="btn btn-primary">Salvează</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Ștergere -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmare Ștergere</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Ești sigur că vrei să ștergi această livrare?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                        <a id="confirmDeleteBtn" class="btn btn-danger">Șterge</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Livrări -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adaugă Livrare</button>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID Livrare</th>
+                <th>Data</th>
+                <th>Ora</th>
+                <th>Status</th>
+                <th>ID Comandă</th>
+                <th>ID Angajat</th>
+                <th>ID Vehicul</th>
+                <th>Acțiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="livrare : ${livrari}">
+                <td th:text="${livrare['Livrare_ID']}"></td>
+                <td th:text="${#dates.format(livrare['Livrare_Data'], 'yyyy-MM-dd')}"></td>
+                <td th:text="${livrare['Livrare_Ora']}"></td>
+                <td th:text="${livrare['Livrare_Status']}"></td>
+                <td th:text="${livrare['Comanda_ID']}"></td>
+                <td th:text="${livrare['Angajat_ID']}"></td>
+                <td th:text="${livrare['Vehicul_ID']}"></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                            th:attr="data-id=${livrare['Livrare_ID']},
+                                     data-data=${#dates.format(livrare['Livrare_Data'], 'yyyy-MM-dd')},
+                                     data-ora=${livrare['Livrare_Ora']},
+                                     data-status=${livrare['Livrare_Status']},
+                                     data-comanda-id=${livrare['Comanda_ID']},
+                                     data-angajat-id=${livrare['Angajat_ID']},
+                                     data-vehicul-id=${livrare['Vehicul_ID']}">
+                        Editează
+                    </button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            th:attr="data-id=${livrare['Livrare_ID']}">
+                        Șterge
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Paginare -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div>
+                <label for="itemsPerPage" class="form-label me-2">Itemi per pagină:</label>
+                <select id="itemsPerPage" class="form-select" style="width: auto; display: inline-block;" onchange="changeItemsPerPage()">
+                    <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+                    <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+                    <option value="50" th:selected="${itemsPerPage == 50}">50</option>
+                </select>
+            </div>
+            <div class="pagination-controls">
+                <a class="btn btn-secondary" th:if="${currentPage > 0}"
+                   th:href="@{/livrari(page=${currentPage - 1}, size=${itemsPerPage},
+                    id=${id}, data=${data}, status=${status}, comandaId=${comandaId}, angajatId=${angajatId}, vehiculId=${vehiculId})}">
+                    &lt;
+                </a>
+                <span th:text="${startItem} + ' - ' + ${endItem} + ' din ' + ${totalItems}"></span>
+                <a class="btn btn-secondary" th:if="${(currentPage + 1) * itemsPerPage < totalItems}"
+                   th:href="@{/livrari(page=${currentPage + 1}, size=${itemsPerPage},
+                    id=${id}, data=${data}, status=${status}, comandaId=${comandaId}, angajatId=${angajatId}, vehiculId=${vehiculId})}">
+                    &gt;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var resetFiltersButton = document.getElementById('resetFilters');
+        resetFiltersButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            const filterForm = document.querySelector('form');
+            filterForm.querySelectorAll('input, select').forEach(function (field) {
+                field.value = '';
+            });
+            filterForm.submit();
+        });
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var livrareId = button.getAttribute('data-id');
+            document.getElementById('confirmDeleteBtn').setAttribute('href', '/livrari/delete/' + livrareId);
+        });
+
+        var editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            document.getElementById('editId').value = button.getAttribute('data-id');
+            document.getElementById('editData').value = button.getAttribute('data-data');
+            document.getElementById('editOra').value = button.getAttribute('data-ora');
+            document.getElementById('editStatus').value = button.getAttribute('data-status');
+            document.getElementById('editComandaId').value = button.getAttribute('data-comanda-id');
+            document.getElementById('editAngajatId').value = button.getAttribute('data-angajat-id');
+            document.getElementById('editVehiculId').value = button.getAttribute('data-vehicul-id');
+        });
+    });
+
+    function changeItemsPerPage() {
+        var itemsPerPage = document.getElementById('itemsPerPage').value;
+        var queryString = '?page=0&size=' + itemsPerPage;
+        var filters = ['id', 'data', 'status', 'comandaId', 'angajatId', 'vehiculId'];
+        filters.forEach(function(filter) {
+            var filterElement = document.getElementById(filter);
+            if (filterElement && filterElement.value) {
+                queryString += '&' + filter + '=' + encodeURIComponent(filterElement.value);
+            }
+        });
+        window.location.href = '/livrari' + queryString;
+    }
+    function validateInput(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        input.value = value;
+    }
+</script>
+
+</body>
+</html>

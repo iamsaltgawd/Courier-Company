@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+  <title th:text="${title}">Clienți</title>
+</head>
+<body>
+<div id="page-container">
+  <header th:replace="layout/fragments :: header"></header>
+  <div id="content-wrap" class="container py-5">
+    <h1 class="mb-4">Lista Clienților</h1>
+
+    <!-- Mesaje de succes sau eroare -->
+    <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Bara de filtru -->
+    <div class="card my-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Filtrare Clienți</h5>
+        <button type="button" class="btn btn-link" id="toggleAdvancedFilters">&#x25BE;</button>
+      </div>
+      <div class="card-body">
+        <form th:action="@{/clienti}" method="get" class="row g-3">
+
+          <!-- Filtre principale -->
+          <div class="col-md-3">
+            <input type="text" class="form-control" id="nume" name="nume" th:value="${nume}" placeholder="Nume Client">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" id="email" name="email" th:value="${email}" placeholder="Email Client">
+          </div>
+          <div class="col-md-3">
+            <button type="button" id="resetFilters" class="btn btn-danger">Resetează Filtre</button>
+            <button type="submit" class="btn btn-primary">Filtrează</button>
+          </div>
+
+          <!-- Filtre avansate -->
+          <div id="advancedFilters" class="row g-3 mt-2" style="display: none;">
+            <div class="col-md-3">
+              <input type="text" class="form-control" id="adresa" name="adresa" th:value="${adresa}" placeholder="Adresă Client">
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" id="telefon" name="telefon" th:value="${telefon}" placeholder="Telefon Client">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Adaugă Client -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addModalLabel">Adaugă Client</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form th:action="@{/clienti/add}" method="post">
+              <div class="mb-3">
+                <label for="addNume" class="form-label">Nume</label>
+                <input type="text" class="form-control" id="addNume" name="client_Nume" required>
+              </div>
+              <div class="mb-3">
+                <label for="addAdresa" class="form-label">Adresă</label>
+                <input type="text" class="form-control" id="addAdresa" name="client_Adresa" required>
+              </div>
+              <div class="mb-3">
+                <label for="addTelefon" class="form-label">Telefon</label>
+                <input type="text" class="form-control" id="addTelefon" name="client_Telefon">
+              </div>
+              <div class="mb-3">
+                <label for="addEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="addEmail" name="client_Email">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                <button type="submit" class="btn btn-primary">Salvează</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Editează Client -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Editează Client</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form th:action="@{/clienti/edit/{id}(id=${editId})}" method="post">
+              <input type="hidden" id="editId" name="client_ID">
+              <div class="mb-3">
+                <label for="editNume" class="form-label">Nume</label>
+                <input type="text" class="form-control" id="editNume" name="client_Nume" required>
+              </div>
+              <div class="mb-3">
+                <label for="editAdresa" class="form-label">Adresă</label>
+                <input type="text" class="form-control" id="editAdresa" name="client_Adresa" required>
+              </div>
+              <div class="mb-3">
+                <label for="editTelefon" class="form-label">Telefon</label>
+                <input type="text" class="form-control" id="editTelefon" name="client_Telefon">
+              </div>
+              <div class="mb-3">
+                <label for="editEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="editEmail" name="client_Email">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                <button type="submit" class="btn btn-primary">Salvează</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Confirmare Ștergere -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Confirmare Ștergere</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Sigur doriți să ștergeți acest client?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+            <a id="confirmDeleteBtn" class="btn btn-danger">Șterge</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Clienți -->
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adaugă Client</button>
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nume</th>
+        <th>Adresă</th>
+        <th>Telefon</th>
+        <th>Email</th>
+        <th>Acțiuni</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="client : ${clienti}">
+        <td th:text="${client['Client_ID']}"></td>
+        <td th:text="${client['Client_Nume']}"></td>
+        <td th:text="${client['Client_Adresa']}"></td>
+        <td th:text="${client['Client_Telefon']}"></td>
+        <td th:text="${client['Client_Email']}"></td>
+        <td>
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                  th:attr="data-id=${client['Client_ID']},
+                   data-nume=${client['Client_Nume']},
+                   data-adresa=${client['Client_Adresa']},
+                   data-telefon=${client['Client_Telefon']},
+                   data-email=${client['Client_Email']}">
+            Editează
+          </button>
+          <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                  th:attr="data-id=${client['Client_ID']}">
+            Șterge
+          </button>
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Paginare -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <div>
+        <label for="itemsPerPage" class="form-label me-2">Itemi per pagină:</label>
+        <select id="itemsPerPage" class="form-select" style="width: auto; display: inline-block;" onchange="changeItemsPerPage()">
+          <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+          <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+          <option value="50" th:selected="${itemsPerPage == 50}">50</option>
+        </select>
+      </div>
+
+      <div class="pagination-controls">
+        <a class="btn btn-secondary" th:if="${currentPage > 0}"
+           th:href="@{/clienti(page=${currentPage - 1}, size=${itemsPerPage},
+                                    nume=${nume}, email=${email}, adresa=${adresa}, telefon=${telefon})}">
+          &lt;
+        </a>
+
+        <span th:text="${startItem} + ' - ' + ${endItem} + ' din ' + ${totalItems}"></span>
+
+        <a class="btn btn-secondary"
+           th:if="${(currentPage + 1) * itemsPerPage < totalItems}"
+           th:href="@{/clienti(page=${currentPage + 1}, size=${itemsPerPage},
+                                    nume=${nume}, email=${email}, adresa=${adresa}, telefon=${telefon})}">
+          &gt;
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var resetFiltersButton = document.getElementById('resetFilters');
+    resetFiltersButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      const filterForm = document.querySelector('form');
+      filterForm.querySelectorAll('input, select').forEach(function (field) {
+        field.value = '';
+      });
+      filterForm.submit();
+    });
+
+    var toggleAdvancedFiltersButton = document.getElementById('toggleAdvancedFilters');
+    var advancedFilters = document.getElementById('advancedFilters');
+    toggleAdvancedFiltersButton.addEventListener('click', function () {
+      if (advancedFilters.style.display === "none") {
+        advancedFilters.style.display = "flex";
+        toggleAdvancedFiltersButton.innerHTML = "&#9650;";
+      } else {
+        advancedFilters.style.display = "none";
+        toggleAdvancedFiltersButton.innerHTML = "&#9660;";
+      }
+    });
+
+    var editModal = document.getElementById('editModal');
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var clientId = button.getAttribute('data-id');
+      var clientNume = button.getAttribute('data-nume');
+      var clientAdresa = button.getAttribute('data-adresa');
+      var clientTelefon = button.getAttribute('data-telefon');
+      var clientEmail = button.getAttribute('data-email');
+
+      document.getElementById('editId').value = clientId;
+      document.getElementById('editNume').value = clientNume;
+      document.getElementById('editAdresa').value = clientAdresa;
+      document.getElementById('editTelefon').value = clientTelefon;
+      document.getElementById('editEmail').value = clientEmail;
+    });
+
+    var deleteModal = document.getElementById('deleteModal');
+    var confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var clientId = button.getAttribute('data-id');
+      confirmDeleteBtn.href = '/clienti/delete/' + clientId;
+    });
+  });
+
+  function changeItemsPerPage() {
+    var itemsPerPage = document.getElementById('itemsPerPage').value;
+    var queryString = '?page=0&size=' + itemsPerPage;
+    var filters = ['nume', 'email', 'adresa', 'telefon'];
+    filters.forEach(function(filter) {
+      var filterElement = document.getElementById(filter);
+      if (filterElement && filterElement.value) {
+        queryString += '&' + filter + '=' + encodeURIComponent(filterElement.value);
+      }
+    });
+    window.location.href = '/clienti' + queryString;
+  }
+</script>
+
+</body>
+</html>

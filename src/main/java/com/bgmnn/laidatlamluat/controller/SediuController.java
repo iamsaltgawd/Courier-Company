@@ -1,3 +1,11 @@
+
+
+/** Clasa pentru controllerul sediilor
+ * @author Calavri Mircea-Cristian
+ * @version 7 ianuarie 2025
+ */
+
+
 package com.bgmnn.laidatlamluat.controller;
 
 import com.bgmnn.laidatlamluat.model.Sediu;

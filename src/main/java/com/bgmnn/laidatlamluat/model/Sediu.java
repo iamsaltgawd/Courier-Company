@@ -1,3 +1,11 @@
+
+
+/** Clasa care poate stoca toate datele din tabela sedii
+ * @author Calavri Mircea-Cristian
+ * @version 7 ianuarie 2025
+ */
+
+
 package com.bgmnn.laidatlamluat.model;
 
 public class Sediu {

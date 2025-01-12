@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+  <title th:text="${title}">Comenzi</title>
+</head>
+<body>
+<div id="page-container">
+  <header th:replace="layout/fragments :: header"></header>
+  <div id="content-wrap" class="container py-5">
+    <h1 class="mb-4">Lista Comenzilor</h1>
+
+    <!-- Mesaje de succes și eroare -->
+    <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Bara de Filtre -->
+    <div class="card my-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Filtrare Comenzi</h5>
+        <button type="button" class="btn btn-link" id="toggleAdvancedFilters">&#x25BE;</button>
+      </div>
+      <div class="card-body">
+        <form th:action="@{/comenzi}" method="get" class="row g-3">
+          <div class="col-md-3">
+            <input type="text" class="form-control" id="comandaId" name="comandaId" th:value="${comandaId}" placeholder="ID Comandă"
+                   oninput="validateInput(this)">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" id="clientId" name="clientId" th:value="${clientId}" placeholder="ID Client"
+                   oninput="validateInput(this)">
+          </div>
+          <div class="col-md-3">
+            <select class="form-control" id="status" name="status">
+              <option value="" th:selected="${status == null or status == ''}">Selectează Status</option>
+              <option value="In Curs" th:selected="${status == 'In Curs'}">În Curs</option>
+              <option value="Livrat" th:selected="${status == 'Livrat'}">Livrat</option>
+              <option value="Anulat" th:selected="${status == 'Anulat'}">Anulat</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button type="button" id="resetFilters" class="btn btn-danger">Resetează Filtre</button>
+            <button type="submit" class="btn btn-primary">Filtrează</button>
+          </div>
+          <div id="advancedFilters" class="row g-3 mt-2" style="display: none;">
+            <div class="col-md-3">
+              <input type="number" class="form-control" id="total" name="total" th:value="${total}" placeholder="Total Comandă">
+            </div>
+            <div class="col-md-3">
+              <input type="date" class="form-control" id="data" name="data" th:value="${data}" placeholder="Data Comandă">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabel Comenzi -->
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adaugă Comandă</button>
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>ID Comandă</th>
+        <th>Data</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>ID Client</th>
+        <th>ID Sediu</th>
+        <th>Acțiuni</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="comanda : ${comenzi}">
+        <td th:text="${comanda['Comanda_ID']}"></td>
+        <td th:text="${#dates.format(comanda['Comanda_Data'], 'yyyy-MM-dd')}"></td>
+        <td th:text="${comanda['Comanda_Status']}"></td>
+        <td th:text="${comanda['Comanda_Total']}"></td>
+        <td th:text="${comanda['Client_ID']}"></td>
+        <td th:text="${comanda['Sediu_ID']}"></td>
+        <td>
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                  th:attr="data-id=${comanda['Comanda_ID']},
+                                     data-data=${#dates.format(comanda['Comanda_Data'], 'yyyy-MM-dd')},
+                                     data-status=${comanda['Comanda_Status']},
+                                     data-total=${comanda['Comanda_Total']},
+                                     data-client-id=${comanda['Client_ID']},
+                                     data-sediu-id=${comanda['Sediu_ID']}">
+            Editează
+          </button>
+          <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                  th:attr="data-id=${comanda['Comanda_ID']}">
+            Șterge
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Paginare -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <div>
+        <label for="itemsPerPage" class="form-label me-2">Itemi per pagină:</label>
+        <select id="itemsPerPage" class="form-select" style="width: auto; display: inline-block;" onchange="changeItemsPerPage()">
+          <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+          <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+          <option value="50" th:selected="${itemsPerPage == 50}">50</option>
+        </select>
+      </div>
+      <div class="pagination-controls">
+        <a class="btn btn-secondary" th:if="${currentPage > 0}"
+           th:href="@{/comenzi(page=${currentPage - 1}, size=${itemsPerPage}, comandaId=${comandaId}, clientId=${clientId}, status=${status}, total=${total}, data=${data})}">
+          &lt;
+        </a>
+        <span th:text="${startItem} + ' - ' + ${endItem} + ' din ' + ${totalItems}"></span>
+        <a class="btn btn-secondary" th:if="${(currentPage + 1) * itemsPerPage < totalItems}"
+           th:href="@{/comenzi(page=${currentPage + 1}, size=${itemsPerPage}, comandaId=${comandaId}, clientId=${clientId}, status=${status}, total=${total}, data=${data})}">
+          &gt;
+        </a>
+      </div>
+    </div>
+
+    <!-- Modal Adaugă -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form th:action="@{/comenzi/add}" method="post">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addModalLabel">Adaugă Comandă</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="addData" class="form-label">Data</label>
+                <input type="date" class="form-control" id="addData" name="comanda_Data" required>
+              </div>
+              <div class="mb-3">
+                <label for="addStatus" class="form-label">Status</label>
+                <select class="form-control" id="addStatus" name="comanda_Status" required>
+                  <option value="In Curs">În Curs</option>
+                  <option value="Livrat">Livrat</option>
+                  <option value="Anulat">Anulat</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="addTotal" class="form-label">Total</label>
+                <input type="number" class="form-control" id="addTotal" name="comanda_Total" step="0.01">
+              </div>
+              <div class="mb-3">
+                <label for="addClientId" class="form-label">ID Client</label>
+                <input type="text" class="form-control" id="addClientId" name="client_ID" oninput="validateInput(this)" required>
+              </div>
+              <div class="mb-3">
+                <label for="addSediuId" class="form-label">ID Sediu</label>
+                <input type="text" class="form-control" id="addSediuId" name="sediu_ID" oninput="validateInput(this)" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+              <button type="submit" class="btn btn-primary">Adaugă</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editare -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form th:action="@{/comenzi/edit/{id}(id=${editId})}" method="post">
+            <input type="hidden" id="editId" name="comanda_ID">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Editează Comandă</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="editData" class="form-label">Data</label>
+                <input type="date" class="form-control" id="editData" name="comanda_Data" required>
+              </div>
+              <div class="mb-3">
+                <label for="editStatus" class="form-label">Status</label>
+                <select class="form-control" id="editStatus" name="comanda_Status" required>
+                  <option value="In Curs">În Curs</option>
+                  <option value="Livrat">Livrat</option>
+                  <option value="Anulat">Anulat</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="editTotal" class="form-label">Total</label>
+                <input type="number" class="form-control" id="editTotal" name="comanda_Total" step="0.01">
+              </div>
+              <div class="mb-3">
+                <label for="editClientId" class="form-label">ID Client</label>
+                <input type="text" class="form-control" id="editClientId" name="client_ID" oninput="validateInput(this)" required>
+              </div>
+              <div class="mb-3">
+                <label for="editSediuId" class="form-label">ID Sediu</label>
+                <input type="text" class="form-control" id="editSediuId" name="sediu_ID" oninput="validateInput(this)" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+              <button type="submit" class="btn btn-primary">Salvează</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal Ștergere -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Confirmare Ștergere</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Ești sigur că vrei să ștergi această comandă?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+            <a id="confirmDeleteBtn" class="btn btn-danger">Șterge</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+
+      document.getElementById('editId').value = button.getAttribute('data-id');
+      document.getElementById('editData').value = button.getAttribute('data-data');
+      document.getElementById('editStatus').value = button.getAttribute('data-status');
+      document.getElementById('editTotal').value = button.getAttribute('data-total');
+      document.getElementById('editClientId').value = button.getAttribute('data-client-id');
+      document.getElementById('editSediuId').value = button.getAttribute('data-sediu-id');
+    });
+
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var comandaId = button.getAttribute('data-id');
+      var deleteUrl = '/comenzi/delete/' + comandaId;
+      document.getElementById('confirmDeleteBtn').setAttribute('href', deleteUrl);
+    });
+
+    var resetFiltersButton = document.getElementById('resetFilters');
+    resetFiltersButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      const filterForm = document.querySelector('form');
+      filterForm.querySelectorAll('input, select').forEach(function (field) {
+        field.value = '';
+      });
+      filterForm.submit();
+    });
+
+    var toggleAdvancedFiltersButton = document.getElementById('toggleAdvancedFilters');
+    var advancedFilters = document.getElementById('advancedFilters');
+    toggleAdvancedFiltersButton.addEventListener('click', function () {
+      if (advancedFilters.style.display === "none") {
+        advancedFilters.style.display = "flex";
+        toggleAdvancedFiltersButton.innerHTML = "&#9650;";
+      } else {
+        advancedFilters.style.display = "none";
+        toggleAdvancedFiltersButton.innerHTML = "&#9660;";
+      }
+    });
+  });
+
+  function validateInput(input) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    input.value = value >= 1 ? value : '';
+  }
+
+  function changeItemsPerPage() {
+    var itemsPerPage = document.getElementById('itemsPerPage').value;
+    var queryString = '?page=0&size=' + itemsPerPage;
+    var filters = ['comandaId', 'clientId', 'status', 'total', 'data'];
+    filters.forEach(function (filter) {
+      var filterElement = document.getElementById(filter);
+      if (filterElement && filterElement.value) {
+        queryString += '&' + filter + '=' + encodeURIComponent(filterElement.value);
+      }
+    });
+    window.location.href = '/comenzi' + queryString;
+  }
+</script>
+
+</body>
+</html>

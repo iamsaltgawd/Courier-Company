@@ -1,3 +1,11 @@
+
+
+/** Clasa pentru controllerul angajatilor
+ * @author Calavri Mircea-Cristian
+ * @version 7 ianuarie 2025
+ */
+
+
 package com.bgmnn.laidatlamluat.controller;
 
 import com.bgmnn.laidatlamluat.model.Angajat;
@@ -43,7 +51,7 @@ public class AngajatController {
         int startItem = page * size + 1;
         int endItem = Math.min((page + 1) * size, totalItems);
 
-        model.addAttribute("title", "LAIDATLAMLUAT");
+        model.addAttribute("title", "Angajati");
         model.addAttribute("activePage", "angajati");
         model.addAttribute("angajati", angajati);
         model.addAttribute("sedii", sedii);

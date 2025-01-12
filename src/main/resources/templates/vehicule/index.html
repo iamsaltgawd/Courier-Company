@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Vehicule</title>
+</head>
+<body>
+<div id="pae-container">
+    <header th:replace="layout/fragments :: header"></header>
+
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Lista Vehiculelor</h1>
+
+        <div th:if="${successMessage != null and successMessage != ''}" class="alert alert-success" role="alert">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage != null and errorMessage != ''}" class="alert alert-danger" role="alert">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <!-- Filtre -->
+        <div class="card my-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Filtrare Vehicule</h5>
+                <button type="button" class="btn btn-link" id="toggleAdvancedFilters">
+                    &#x25BE;
+                </button>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/vehicule}" method="get" class="row g-3">
+
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="id" name="id" th:value="${id}" placeholder="ID"
+                               oninput="validateInput(this)">
+                    </div>
+
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="tip" name="tip" th:value="${tip}" placeholder="Tip">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="status" name="status">
+                            <option value="" th:selected="${status == null or status == ''}">Selectează Status</option>
+                            <option value="Disponibil" th:selected="${status == 'Disponibil'}">Disponibil</option>
+                            <option value="In Curs" th:selected="${status == 'In Curs'}">În Curs</option>
+                            <option value="Defect" th:selected="${status == 'Defect'}">Defect</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="sediu" name="sediu">
+                            <option value="" th:selected="${sediu == null or sediu == ''}">Selectează un sediu</option>
+                            <option th:each="s : ${sedii}"
+                                    th:value="${s.sediu_ID}"
+                                    th:text="${s.sediu_ID} + ' - ' + ${s.sediu_Nume}"
+                                    th:selected="${sediu != null and sediu.toString() == s.sediu_ID.toString()}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 justify-content-end">
+                        <button type="button" id="resetFilters" class="btn btn-danger">Resetează Filtre</button>
+                        <button type="submit" class="btn btn-primary">Filtrează</button>
+                    </div>
+
+                    <div id="advancedFilters" class="row g-3 mt-2" style="display: none;">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="numarInmatriculare" name="numarInmatriculare"
+                                   th:value="${numarInmatriculare}" placeholder="Număr Înmatriculare">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="capacitate" name="capacitate" th:value="${capacitate}" placeholder="Capacitate">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adaugă Vehicul</button>
+        <!-- Modal Adaugă -->
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Adaugă Vehicul</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/vehicule/add}" method="post">
+                            <div class="mb-3">
+                                <label for="addTip" class="form-label">Tip</label>
+                                <input type="text" class="form-control" id="addTip" name="vehicul_Tip" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCapacitate" class="form-label">Capacitate</label>
+                                <input type="number" class="form-control" id="addCapacitate" name="vehicul_Capacitate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addNumarInmatriculare" class="form-label">Număr Înmatriculare</label>
+                                <input type="text" class="form-control" id="addNumarInmatriculare" name="vehicul_Num_Inmatriculare" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addStatus" class="form-label">Status</label>
+                                <select class="form-control" id="addStatus" name="vehicul_Status" required>
+                                    <option value="Disponibil">Disponibil</option>
+                                    <option value="In Curs">În Curs</option>
+                                    <option value="Defect">Defect</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addSediu" class="form-label">Sediu</label>
+                                <select class="form-control" id="addSediu" name="sediu_ID" required>
+                                    <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_Nume}"></option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                                <button type="submit" class="btn btn-primary">Salvează</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Editare -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Editează Vehicul</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm" th:action="@{/vehicule/edit/}" method="post">
+                            <input type="hidden" id="editVehiculId" name="vehicul_ID">
+                            <div class="mb-3">
+                                <label for="editTip" class="form-label">Tip</label>
+                                <input type="text" class="form-control" id="editTip" name="vehicul_Tip" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCapacitate" class="form-label">Capacitate</label>
+                                <input type="number" class="form-control" id="editCapacitate" name="vehicul_Capacitate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editNumarInmatriculare" class="form-label">Număr Înmatriculare</label>
+                                <input type="text" class="form-control" id="editNumarInmatriculare" name="vehicul_Num_Inmatriculare" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editStatus" class="form-label">Status</label>
+                                <select class="form-control" id="editStatus" name="vehicul_Status" required>
+                                    <option value="Disponibil">Disponibil</option>
+                                    <option value="In Curs">În Curs</option>
+                                    <option value="Defect">Defect</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSediu" class="form-label">Sediu</label>
+                                <select class="form-control" id="editSediu" name="sediu_ID" required>
+                                    <option th:each="sediu : ${sedii}" th:value="${sediu.sediu_ID}" th:text="${sediu.sediu_Nume}"></option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                                <button type="submit" class="btn btn-primary">Salvează</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Stergere -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmare Ștergere</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Ești sigur că vrei să ștergi acest vehicul?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                        <a id="confirmDeleteBtn" class="btn btn-danger">Șterge</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tip</th>
+                <th>Capacitate</th>
+                <th>Număr Înmatriculare</th>
+                <th>Status</th>
+                <th>Sediu</th>
+                <th>Acțiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vehicul : ${vehicule}">
+                <td th:text="${vehicul['Vehicul_ID']}"></td>
+                <td th:text="${vehicul['Vehicul_Tip']}"></td>
+                <td th:text="${vehicul['Vehicul_Capacitate']}"></td>
+                <td th:text="${vehicul['Vehicul_Num_Inmatriculare']}"></td>
+                <td th:text="${vehicul['Vehicul_Status']}"></td>
+                <td th:text="${vehicul['Sediu_ID']} + ' - ' + ${vehicul['Sediu_Nume']}"></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                            th:attr="data-id=${vehicul['Vehicul_ID']},
+                                     data-tip=${vehicul['Vehicul_Tip']},
+                                     data-capacitate=${vehicul['Vehicul_Capacitate']},
+                                     data-numar-inmatriculare=${vehicul['Vehicul_Num_Inmatriculare']},
+                                     data-status=${vehicul['Vehicul_Status']},
+                                     data-sediu=${vehicul['Sediu_ID']}">
+                        Editează
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            th:attr="data-id-th=${vehicul['Vehicul_ID']}, data-numar-th=${vehicul['Vehicul_Num_Inmatriculare']}">
+                        Șterge
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+            <!-- Paginare -->
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div>
+                <label for="itemsPerPage" class="form-label me-2">Itemi per pagina:</label>
+                <select id="itemsPerPage" class="form-select" style="width: auto; display: inline-block;" onchange="changeItemsPerPage()">
+                    <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+                    <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+                    <option value="50" th:selected="${itemsPerPage == 50}">50</option>
+                </select>
+            </div>
+
+            <div class="pagination-controls">
+                <a class="btn btn-secondary"
+                   th:if="${currentPage > 0}"
+                   th:href="@{/vehicule(page=${currentPage - 1}, size=${itemsPerPage},
+                    tip=${tip}, capacitate=${capacitate}, numarInmatriculare=${numarInmatriculare}, status=${status}, sediu=${sediu})}">
+                    &lt;
+                </a>
+
+                <span th:text="${startItem} + ' - ' + ${endItem} + ' din ' + ${totalItems}"></span>
+
+                <a class="btn btn-secondary"
+                   th:if="${(currentPage + 1) * itemsPerPage < totalItems}"
+                   th:href="@{/vehicule(page=${currentPage + 1}, size=${itemsPerPage},
+                    tip=${tip}, capacitate=${capacitate}, numarInmatriculare=${numarInmatriculare}, status=${status}, sediu=${sediu})}">
+                    &gt;
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer th:replace="layout/fragments :: footer"></footer>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var vehiculId = button.getAttribute('data-id');
+            var tip = button.getAttribute('data-tip');
+            var capacitate = button.getAttribute('data-capacitate');
+            var numarInmatriculare = button.getAttribute('data-numar-inmatriculare');
+            var status = button.getAttribute('data-status');
+            var sediu = button.getAttribute('data-sediu');
+
+            document.getElementById('editForm').action = '/vehicule/edit/' + vehiculId;
+            document.getElementById('editVehiculId').value = vehiculId;
+            document.getElementById('editTip').value = tip;
+            document.getElementById('editCapacitate').value = capacitate;
+            document.getElementById('editNumarInmatriculare').value = numarInmatriculare;
+            document.getElementById('editStatus').value = status;
+            document.getElementById('editSediu').value = sediu;
+        });
+
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var vehiculId = button.getAttribute('data-id-th');
+            var deleteUrl = '/vehicule/delete/' + vehiculId;
+
+            document.getElementById('confirmDeleteBtn').setAttribute('href', deleteUrl);
+        });
+
+
+        var resetFiltersButton = document.getElementById('resetFilters');
+        resetFiltersButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            window.location.href = '/vehicule';
+        });
+
+    });
+    function changeItemsPerPage() {
+        var itemsPerPage = document.getElementById('itemsPerPage').value;
+
+        var queryString = '?page=0&size=' + itemsPerPage;
+        var filters = ['tip', 'capacitate', 'numarInmatriculare', 'status', 'sediu'];
+
+        filters.forEach(function(filter) {
+            var filterElement = document.getElementById(filter);
+            if (filterElement && filterElement.value) {
+                queryString += '&' + filter + '=' + encodeURIComponent(filterElement.value);
+            }
+        });
+
+        window.location.href = '/vehicule' + queryString;
+    }
+    function validateInput(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        input.value = value;
+    }
+</script>
+
+</body>
+</html>

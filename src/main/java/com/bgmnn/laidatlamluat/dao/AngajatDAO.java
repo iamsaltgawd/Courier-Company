@@ -1,3 +1,11 @@
+
+
+/** Clasa DATA ACCESS OBJECT (DAO, creata cu scopul de extrage / injecta datele din DB.) pentru angajati
+ * @author Calavri Mircea-Cristian
+ * @version 7 ianuarie 2025
+ */
+
+
 package com.bgmnn.laidatlamluat.dao;
 
 import com.bgmnn.laidatlamluat.model.Angajat;

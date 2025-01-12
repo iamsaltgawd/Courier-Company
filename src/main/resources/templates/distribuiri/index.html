@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/fragments :: html_head">
+    <title th:text="${title}">Distribuiri Masini</title>
+</head>
+<body>
+<div id="page-container">
+    <header th:replace="layout/fragments :: header"></header>
+    <div id="content-wrap" class="container py-5">
+        <h1 class="mb-4">Distribuiri Angajați-Vehicule</h1>
+
+        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Adaugă Distribuire</button>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID Angajat</th>
+                <th>Nume Angajat</th>
+                <th>Număr Înmatriculare Vehicul</th>
+                <th>Acțiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="distribuire : ${distribuiri}">
+                <td th:text="${distribuire['Angajat_ID']}"></td>
+                <td th:text="${distribuire['Angajat_Nume']}"></td>
+                <td th:text="${distribuire['Vehicul_Num_Inmatriculare']}"></td>
+                <td>
+                    <form th:action="@{/distribuiri/delete}" method="post">
+                        <input type="hidden" name="angajatId" th:value="${distribuire['Angajat_ID']}">
+                        <input type="hidden" name="vehiculId" th:value="${distribuire['Vehicul_ID']}">
+                        <button class="btn btn-danger btn-sm" type="submit">Șterge</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Adaugă -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Adaugă Distribuire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/distribuiri/add}" method="post">
+                        <div class="mb-3">
+                            <label for="angajatId" class="form-label">Angajat</label>
+                            <select class="form-control" id="angajatId" name="angajatId" required>
+                                <option value="" disabled selected>Selectează un angajat</option>
+                                <option th:each="angajat : ${angajati}"
+                                        th:value="${angajat['Angajat_ID']}"
+                                        th:text="${angajat['Angajat_ID']} + ' - ' + ${angajat['Angajat_Nume']}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vehiculId" class="form-label">Vehicul</label>
+                            <select class="form-control" id="vehiculId" name="vehiculId" required>
+                                <option value="" disabled selected>Selectează un vehicul</option>
+                                <option th:each="vehicul : ${vehicule}"
+                                        th:value="${vehicul['Vehicul_ID']}"
+                                        th:text="${vehicul['Vehicul_Num_Inmatriculare']}"></option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                            <button type="submit" class="btn btn-primary">Adaugă</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

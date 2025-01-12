@@ -38,10 +38,26 @@
                     <a class="nav-link" href="/" th:classappend="${activePage == 'home' ? 'active' : ''}">Home</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/sedii" th:classappend="${activePage == 'sedii' ? 'active' : ''}">Sedii</a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link" href="/angajati" th:classappend="${activePage == 'angajati' ? 'active' : ''}">Angajati</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/sedii" th:classappend="${activePage == 'sedii' ? 'active' : ''}">Sedii</a>
+                    <a class="nav-link" href="/distribuiri" th:classappend="${activePage == 'distribuiri' ? 'active' : ''}">Distribuirea Masinilor</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/vehicule" th:classappend="${activePage == 'vehicule' ? 'active' : ''}">Vehicule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clienti" th:classappend="${activePage == 'clienti' ? 'active' : ''}">Clienti</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/comenzi" th:classappend="${activePage == 'comenzi' ? 'active' : ''}">Comenzi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/livrari" th:classappend="${activePage == 'livrari' ? 'active' : ''}">Livrari</a>
                 </li>
             </ul>
         </div>
@@ -50,7 +66,7 @@
 <!-- actual page content -->
 <footer class="bg-light border-top py-3" th:fragment="footer">
     <div class="container text-center">
-        &copy; 2024 LAIDATLAMLUAT
+        &copy; 2025 LAIDATLAMLUAT
     </div>
 </footer>
 
